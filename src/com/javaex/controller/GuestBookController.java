@@ -13,6 +13,7 @@ import java.util.*;
 
 import com.javaex.dao.*;
 import com.javaex.vo.*;
+import com.javaex.util.*;
 
 @WebServlet("/gbc")
 public class GuestBookController extends HttpServlet {
@@ -23,6 +24,7 @@ public class GuestBookController extends HttpServlet {
 		request.setCharacterEncoding("UTF-8");
 		
 		GuestBookDao gDao = new GuestBookDao();
+		WebUtil webUtil = new WebUtil();
 		String action = request.getParameter("action");
 		
 		if("addList".equals(action)) {
@@ -30,12 +32,10 @@ public class GuestBookController extends HttpServlet {
 			
 			request.setAttribute("gList", gList);
 			
-			RequestDispatcher rd = request.getRequestDispatcher("/addList.jsp");
-			rd.forward(request, response);
+			webUtil.forward(request, response, "WEB-INF/addList.jsp");
 		}
 		else if("deleteForm".equals(action)) {
-			RequestDispatcher rd = request.getRequestDispatcher("/deleteForm.jsp");
-			rd.forward(request, response);
+			webUtil.forward(request, response, "WEB-INF/deleteForm.jsp");
 		}
 		else if("add".equals(action)) {
 			String name = request.getParameter("name");
@@ -46,7 +46,7 @@ public class GuestBookController extends HttpServlet {
 			
 			gDao.insert(gVo);
 			
-			response.sendRedirect("./gbc?action=addList");
+			webUtil.redirect(request, response, "./gbc?action=addList");
 		}
 		else if("delete".equals(action)) {
 			int no = Integer.parseInt(request.getParameter("no"));
@@ -56,9 +56,9 @@ public class GuestBookController extends HttpServlet {
 			
 			if(password.equals(correct)) {
 				gDao.delete(no);
-				response.sendRedirect("./gbc?action=addList");
+				webUtil.redirect(request, response, "./gbc?action=addList");
 			} else {
-				response.sendRedirect("./gbc?action=deleteForm&no=" + no);
+				webUtil.redirect(request, response, "./gbc?action=deleteForm&no=" + no);
 			}
 		}
 		else {
