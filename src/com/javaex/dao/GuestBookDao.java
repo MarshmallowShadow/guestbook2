@@ -1,4 +1,5 @@
 package com.javaex.dao;
+
 import java.sql.*;
 import java.util.*;
 import com.javaex.vo.*;
@@ -69,7 +70,7 @@ public class GuestBookDao {
 	}
 	
 	
-	public int delete(int no) {
+	public int delete(int no, String password) {
 		int count = -1;
 		
 		try {
@@ -78,9 +79,11 @@ public class GuestBookDao {
 			String query = "";
 			query += " delete from guestbook";
 			query += " where no = ?";
+			query += " and password = ?";
 			
 			pstmt = conn.prepareStatement(query);
 			pstmt.setInt(1, no);
+			pstmt.setString(2, password);
 			
 			count = pstmt.executeUpdate();
 			
@@ -108,6 +111,7 @@ public class GuestBookDao {
 			query += " 			content,";
 			query += " 			to_char(reg_date, ?)";
 			query += " from guestbook";
+			query += " order by no";
 			
 			
 			pstmt = conn.prepareStatement(query);
@@ -133,45 +137,5 @@ public class GuestBookDao {
 		
 		close();
 		return gList;
-	}
-	
-	
-	public GuestVo getGuest(int no) {
-		GuestVo gVo = new GuestVo();
-		
-		try {
-			getConnection();
-			
-			String query = "";
-			query += " select	no,";
-			query += " 			name,";
-			query += " 			password,";
-			query += " 			content,";
-			query += " 			to_char(reg_date, ?)";
-			query += " from guestbook";
-			query += " where no = ?";
-			
-			
-			pstmt = conn.prepareStatement(query);
-			pstmt.setString(1, "YYYY-MM-DD HH:MM:SS");
-			pstmt.setInt(2, no);
-			
-			rs = pstmt.executeQuery();
-			
-			if(rs.next()) {
-				String name = rs.getString(2);
-				String password = rs.getString(3);
-				String content = rs.getString(4);
-				String regDate = rs.getString(5);
-				
-				gVo = new GuestVo(no, name, password, content, regDate);
-			}
-			
-		} catch(SQLException e) {
-			System.out.println("error: " + e);
-		}
-		
-		close();
-		return gVo;
 	}
 }

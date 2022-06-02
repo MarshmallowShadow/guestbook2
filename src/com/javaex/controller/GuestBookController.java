@@ -49,11 +49,10 @@ public class GuestBookController extends HttpServlet {
 		else if("delete".equals(action)) {
 			int no = Integer.parseInt(request.getParameter("no"));
 			String password = request.getParameter("password");
-			GuestVo gVo = gDao.getGuest(no);
-			String correct = gVo.getPassword();
 			
-			if(password.equals(correct)) {
-				gDao.delete(no);
+			int confirm = gDao.delete(no, password);
+			
+			if(confirm > 0) {
 				WebUtil.redirect(request, response, "./gbc?action=addList");
 			} else {
 				WebUtil.redirect(request, response, "./gbc?action=deleteForm&no=" + no);
